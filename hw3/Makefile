@@ -1,4 +1,4 @@
-RACOEXEFLAGS=--collects-path /usr/share/racket/collects --exf-clear ++exf -m ++exf -U ++exf --
+RACOEXEFLAGS=--collects-path $(shell readlink -m $$(which racket)/../../share/racket/collects) --exf-clear ++exf -m ++exf -U ++exf --
 
 .PHONY : all
 all : mceval
