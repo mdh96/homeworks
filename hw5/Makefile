@@ -6,6 +6,7 @@ all : hw5
 
 .PHONY : create-sandbox
 create-sandbox :
+	$(CABAL) update
 	$(CABAL) sandbox init
 	$(CABAL) install --dependencies-only
 
