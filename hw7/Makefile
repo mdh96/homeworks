@@ -3,10 +3,16 @@ GHC ?= ghc
 DOT ?= dot
 
 .PHONY : all
-all : fsm
+all : cabal.sandbox.config
+	$(CABAL) install --disable-documentation
+	cp .cabal-sandbox/bin/fsm* .
+	cp .cabal-sandbox/bin/test* .
 
-.PHONY : create-sandbox
-create-sandbox : ~/.cabal/config
+~/.cabal/config :
+	$(CABAL) update
+
+cabal.sandbox.config : ~/.cabal/config
+	$(CABAL) update
 	$(CABAL) sandbox init
 	$(CABAL) install --dependencies-only
 
@@ -15,30 +21,19 @@ clean :
 	$(CABAL) clean
 	rm -f fsm test match match.c *.dot *.pdf
 
-.PHONY : dist-clean
-dist-clean : clean
+.PHONY : distclean
+distclean : clean
 	rm -rf cabal.sandbox.config .cabal-sandbox
 
 .PHONY : run-tests
-run-tests : test
+run-tests : all
 	./test
-
-~/.cabal/config :
-	$(CABAL) update
-
-cabal.sandbox.config : create-sandbox
 
 .PHONY : figs
 figs : epsilon.pdf a.pdf ab.pdf a-or-b.pdf ab-star.pdf
 
 test : dist/build/test/test
 	cp $< $@
-
-fsm : dist/build/fsm/fsm
-	cp $< $@
-
-dist/build/test/test dist/build/fsm/fsm : cabal.sandbox.config
-	$(CABAL) build
 
 match : main.c match.c
 	gcc -o $@ $^
