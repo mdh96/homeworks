@@ -50,6 +50,10 @@ bSem (And b1 b2) s = bSem b1 s && bSem b2 s
 
 -- | The semantic function for statements
 sStep :: Stm -> State -> State
-sStep Skip         s = s
-sStep (Out _)      s = s
-sStep _            _ = error "sStep: you need to fill in the missing cases in Interpreter.hs"
+sStep Skip            s                      = s
+sStep (Out _)         s                      = s
+aStep (Assign x a)    s                      = extend s x (aSem a s)
+--aStet (Seq stm1 stm2) s                       = aStep stm1 stm2 s
+aStep (If b stm1 stm2) s | bSem b s == True = aStep stm1 s
+                         | otherwise        = aStep stm2 s
+aStep (While b stm)    s = aStep (If b (While b stm) Skip) s
